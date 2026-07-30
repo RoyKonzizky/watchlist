@@ -1,5 +1,5 @@
-import type {WatchlistSecurity} from "../../types/watchlist.ts";
-import {formatBound} from "../../utils/formatters.ts";
+import type {WatchlistSecurity} from "../../../types/watchlist.ts";
+import {formatBound} from "../../../utils/formatters.ts";
 
 export function DailyRange({security}: {security: WatchlistSecurity}) {
     const {dailyRange, lastPrice} = security;

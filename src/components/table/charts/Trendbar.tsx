@@ -1,5 +1,5 @@
-import type {WatchlistSecurity} from "../../types/watchlist.ts";
-import {formatPercent} from "../../utils/formatters.ts";
+import type {WatchlistSecurity} from "../../../types/watchlist.ts";
+import {formatPercent} from "../../../utils/formatters.ts";
 
 export function TrendBar({security}: {security: WatchlistSecurity}) {
     const peak = Math.max(...security.weeklyBars.map((bar) => Math.abs(bar.changePercent)), 1);

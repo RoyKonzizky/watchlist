@@ -2,9 +2,9 @@ import type {WatchlistSecurity} from "../types/watchlist.ts";
 import {formatPercent, formatTurnover, tone} from "../utils/formatters.ts";
 import {Amount} from "./table/cells/Amount.tsx";
 import {ReturnBadge} from "./table/cells/ReturnBadge.tsx";
-import {DailyRange} from "./charts/DailyRange.tsx";
-import {MiniChart} from "./charts/Minichart.tsx";
-import {TrendBar} from "./charts/Trendbar.tsx";
+import {DailyRange} from "./table/charts/DailyRange.tsx";
+import {MiniChart} from "./table/charts/Minichart.tsx";
+import {TrendBar} from "./table/charts/Trendbar.tsx";
 import mockWatchlist from "../data/mockWatchlist.ts";
 import {type Column, DataTable} from "./table/DataTable.tsx";
 

@@ -1,4 +1,4 @@
-import type {WatchlistSecurity} from "../../types/watchlist.ts";
+import type {WatchlistSecurity} from "../../../types/watchlist.ts";
 
 const WIDTH = 120;
 const HEIGHT = 34;
