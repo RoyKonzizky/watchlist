@@ -1,10 +1,10 @@
-import {WatchList} from "./WatchList.tsx";
+import {Watchlist} from "./components/Watchlist.tsx";
 
 function App() {
 
     return (
-        <div className="mr-10 ml-10 w-[90vw]">
-            <WatchList/>
+        <div className="mr-10 ml-10">
+            <Watchlist/>
         </div>
     )
 }
