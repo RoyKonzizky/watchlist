@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {useMemo} from "react";
 import {DailyRange} from "./charts/DailyRange.tsx";
 import {MiniChart} from "./charts/Minichart.tsx";
 import {TrendBar} from "./charts/Trendbar.tsx";
@@ -14,10 +15,16 @@ import {AddSecurityDialog} from "../AddSecurityDialog.tsx";
 import {ListNameDialog} from "../ListNameDialog.tsx";
 import {EditListDialog} from "../EditListDialog.tsx";
 import {RowMenu} from "./cells/RowMenu.tsx";
-
-const byId = new Map(mockWatchlist.map((security) => [security.id, security]));
+import {TableSkeleton, ErrorState} from "./../TableStates.tsx";
+import {useLiveSecurities} from "../../hooks/useLiveSecurities.ts";
+// import {fetchSecurities} from "../../api/securitiesApi.tsx";
 
 export function Watchlist() {
+    const {securities, status, error, reload} = useLiveSecurities();
+    const byId = useMemo(
+        () => new Map(securities.map((security) => [security.id, security])),
+        [securities],
+    );
 
     const [lists, setLists] = useState(watchlists);
     const [activeId, setActiveId] =
@@ -190,7 +197,24 @@ export function Watchlist() {
                 onToggleDefault={toggleDefault}
             />
 
-            <DataTable columns={columns} rows={rows} rowKey={(security) => security.id}/>
+            {status === 'loading' && <TableSkeleton/>}
+
+            {status === 'failed' && (
+                <ErrorState message={error ?? 'טעינת הנתונים נכשלה'} onRetry={reload}/>
+            )}
+
+            {/*{status === 'succeeded' && rows.length === 0 && (*/}
+            {/*    <EmptyState*/}
+            {/*        title="הרשימה ריקה"*/}
+            {/*        description="הוסיפו ניירות כדי לראות אותם כאן"*/}
+            {/*        actionLabel="+ הוסף נייר"*/}
+            {/*        onAction={() => setDialog('add')}*/}
+            {/*    />*/}
+            {/*)}*/}
+
+            {status === 'succeeded' && rows.length > 0 && (
+                <DataTable columns={columns} rows={rows} rowKey={(security) => security.id}/>
+            )}
 
             {dialog === 'add' && (
                 <AddSecurityDialog
