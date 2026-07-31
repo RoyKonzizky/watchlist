@@ -18,7 +18,7 @@ interface SecuritySeed {
     logo: SecurityLogo;
     lastPrice: number;
     changePercent: number;
-    /** Turnover for the session, in `currency` units. */
+    //Turnover for the session, in `currency` units.
     turnover: number;
     dailyLow: number;
     dailyHigh: number;
@@ -297,13 +297,12 @@ const SECURITY_SEEDS: SecuritySeed[] = [
     },
 ];
 
-/** Half-hourly stamps of a TASE continuous-trading session. */
 const SESSION_TIMES = [
     '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '12:30', '13:00',
     '13:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00',
 ];
 
-/** Sunday opening the most recent of the 13 weeks. */
+//Sunday opening the most recent of the 13 weeks.
 const LAST_WEEK_START = new Date('2026-07-26T00:00:00Z');
 
 /** mulberry32 – tiny deterministic PRNG, so the mock series never re-shuffle. */
@@ -318,7 +317,7 @@ function createRandom(seed: number): () => number {
     };
 }
 
-/** Stable seed per row, so adding a security does not disturb its neighbours. */
+//Stable seed per row, so adding a security does not disturb its neighbours.
 function hashSeed(value: string): number {
     let hash = 2166136261;
     for (let i = 0; i < value.length; i++) {
@@ -410,7 +409,7 @@ function toSecurity(seed: SecuritySeed): WatchlistSecurity {
 
     return {
         id: `${seed.market}:${seed.securityNumber}`,
-        // symbol: seed.symbol,
+        symbol: seed.symbol,
         securityNumber: seed.securityNumber,
         nameHe: seed.nameHe,
         nameEn: seed.nameEn,

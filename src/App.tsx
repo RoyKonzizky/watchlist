@@ -1,4 +1,4 @@
-import {Watchlist} from "./components/Watchlist.tsx";
+import {Watchlist} from "./components/table/Watchlist.tsx";
 
 function App() {
 

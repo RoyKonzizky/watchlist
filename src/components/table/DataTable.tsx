@@ -25,7 +25,6 @@ export function DataTable<T>({columns, rows, rowKey}: DataTableProps<T>) {
         const sorter = columns.find((column) => column.key === sort.key)?.sorter;
         if (!sorter) return rows;
 
-        // Copy first: sorting the prop array in place would mutate the caller's data.
         const sorted = [...rows].sort(sorter);
         return sort.direction === 'asc' ? sorted : sorted.reverse();
     }, [rows, columns, sort]);
@@ -45,9 +44,10 @@ export function DataTable<T>({columns, rows, rowKey}: DataTableProps<T>) {
                 {columns.map((column) => (
                     <th
                         key={column.key}
+                        onClick={column.sorter ? () => toggleSort(column.key) : undefined}
                         style={{
                             width: column.width,
-                            padding: '10px 16px',
+                            padding: '6px 16px',
                             lineHeight: 1.4,
                             textAlign: column.align ?? 'start',
                             borderBottom: '1px solid #f0f0f0',
@@ -59,15 +59,12 @@ export function DataTable<T>({columns, rows, rowKey}: DataTableProps<T>) {
                             cursor: column.sorter ? 'pointer' : 'default',
                             userSelect: 'none',
                         }}
-                        onClick={column.sorter ? () => toggleSort(column.key) : undefined}
                     >
                         {column.title}
                         {column.sorter && (
                             <span style={{marginInlineStart: 6, color: '#9ca3af', fontSize: 10}}>
-                                    {sort?.key === column.key
-                                        ? (sort.direction === 'asc' ? '▲' : '▼')
-                                        : '⇅'}
-                                </span>
+                                {sort?.key === column.key ? (sort.direction === 'asc' ? '▲' : '▼') : '⇅'}
+                            </span>
                         )}
                     </th>
                 ))}

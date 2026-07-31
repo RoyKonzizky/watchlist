@@ -55,6 +55,7 @@ export interface WatchlistSecurity {
     sector: string;
     currency: Currency;
     logo: SecurityLogo;
+    symbol: string;
 
     /** שער אחרון – last traded price, in `currency` units. */
     lastPrice: number;
