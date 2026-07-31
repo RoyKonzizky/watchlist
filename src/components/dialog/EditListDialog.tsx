@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {GripVertical, Minus} from "lucide-react";
-import type {WatchlistSecurity} from "../types/watchlist.ts";
-import {Modal} from "./Modal.tsx";
+import type {WatchlistSecurity} from "../../types/watchlist.ts";
+import {Modal} from "../Modal.tsx";
 
 interface EditListDialogProps {
     securities: WatchlistSecurity[];

@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {Modal} from "./Modal.tsx";
+import {Modal} from "../Modal.tsx";
 
 interface ListNameDialogProps {
     title: string;

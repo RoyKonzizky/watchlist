@@ -1,7 +1,7 @@
 import {useMemo, useState} from "react";
 import {Heart, Search} from "lucide-react";
-import type {WatchlistSecurity} from "../types/watchlist.ts";
-import { Modal } from "./Modal.tsx";
+import type {WatchlistSecurity} from "../../types/watchlist.ts";
+import { Modal } from "../Modal.tsx";
 
 interface AddSecurityDialogProps {
     securities: WatchlistSecurity[];
@@ -48,7 +48,7 @@ export function AddSecurityDialog({
                 <div className="relative">
                     <Search
                         size={16}
-                        className="pointer-events-none absolute inset-y-0 my-auto end-4 text-slate-400"
+                        className="pointer-events-none absolute inset-y-0 my-auto inset-e-4 text-slate-400"
                     />
                     <input
                         value={query}
