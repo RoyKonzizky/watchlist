@@ -1,4 +1,4 @@
-import {AlertCircle, RefreshCw} from "lucide-react";
+import {AlertCircle, RefreshCw, Inbox} from "lucide-react";
 
 export function TableSkeleton({rows = 8}: {rows?: number}) {
     return (
@@ -42,30 +42,30 @@ export function ErrorState({message, onRetry}: ErrorStateProps) {
     );
 }
 
-// interface EmptyStateProps {
-//     title: string;
-//     description: string;
-//     actionLabel: string;
-//     onAction: () => void;
-// }
-//
-// export function EmptyState({title, description, actionLabel, onAction}: EmptyStateProps) {
-//     return (
-//         <div className="flex flex-col items-center gap-2 px-4 py-16 text-center">
-//             <Inbox size={28} className="text-slate-300"/>
-//             <p className="text-sm font-semibold text-slate-700">{title}</p>
-//             <p className="text-xs text-slate-400">{description}</p>
-//             <button
-//                 type="button"
-//                 onClick={onAction}
-//                 className="mt-2 cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm text-white
-//                     transition-colors hover:bg-blue-700"
-//             >
-//                 {actionLabel}
-//             </button>
-//         </div>
-//     );
-// }
+interface EmptyStateProps {
+    title: string;
+    description: string;
+    actionLabel: string;
+    onAction: () => void;
+}
+
+export function EmptyState({title, description, actionLabel, onAction}: EmptyStateProps) {
+    return (
+        <div className="flex flex-col items-center gap-2 px-4 py-16 text-center">
+            <Inbox size={28} className="text-slate-300"/>
+            <p className="text-sm font-semibold text-slate-700">{title}</p>
+            <p className="text-xs text-slate-400">{description}</p>
+            <button
+                type="button"
+                onClick={onAction}
+                className="mt-2 cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm text-white
+                    transition-colors hover:bg-blue-700"
+            >
+                {actionLabel}
+            </button>
+        </div>
+    );
+}
 
 export function StaleFeedBanner() {
     return (

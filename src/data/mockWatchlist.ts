@@ -1,11 +1,4 @@
-import type {
-    Currency,
-    IntradayPoint,
-    Market,
-    SecurityLogo,
-    WatchlistSecurity,
-    WeeklyBar,
-} from '../types/watchlist.ts';
+import type {Currency, IntradayPoint, Market, SecurityLogo, WatchlistSecurity, WeeklyBar,} from '../types/watchlist.ts';
 
 interface SecuritySeed {
     symbol: string;
@@ -18,7 +11,6 @@ interface SecuritySeed {
     logo: SecurityLogo;
     lastPrice: number;
     changePercent: number;
-    //Turnover for the session, in `currency` units.
     turnover: number;
     dailyLow: number;
     dailyHigh: number;

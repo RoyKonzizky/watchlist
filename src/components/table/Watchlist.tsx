@@ -1,91 +1,64 @@
-import {useState} from "react";
-import {useMemo} from "react";
+import {useEffect, useState} from "react";
 import {DailyRange} from "./charts/DailyRange.tsx";
 import {MiniChart} from "./charts/Minichart.tsx";
 import {TrendBar} from "./charts/Trendbar.tsx";
-import type { WatchlistSecurity } from "../../types/watchlist.ts";
-import mockWatchlist from "../../data/mockWatchlist.ts";
-import watchlists from "../../utils/watchlists.ts";
+import type {WatchlistSecurity} from "../../types/watchlist.ts";
 import {type Column, DataTable} from "./DataTable.tsx";
 import {Amount} from "./cells/Amount.tsx";
 import {formatPercent, formatTurnover, tone} from "../../utils/formatters.ts";
 import {ReturnBadge} from "./cells/ReturnBadge.tsx";
-import {WatchlistToolbar} from "../watchlistToolbar/WatchlistToolbar.tsx";
-import {AddSecurityDialog} from "../dialog/AddSecurityDialog.tsx";
-import {ListNameDialog} from "../dialog/ListNameDialog.tsx";
-import {EditListDialog} from "../dialog/EditListDialog.tsx";
 import {RowMenu} from "./cells/RowMenu.tsx";
-import {TableSkeleton, ErrorState} from "./../TableStates.tsx";
-import {useLiveSecurities} from "../../hooks/useLiveSecurities.ts";
-// import {fetchSecurities} from "../../api/securitiesApi.tsx";
+import {WatchlistToolbar} from "../watchlistToolbar/WatchlistToolbar.tsx";
+import {AddSecurityDialog} from ".././dialog/AddSecurityDialog.tsx";
+import {ListNameDialog} from ".././dialog/ListNameDialog.tsx";
+import {EditListDialog} from ".././dialog/EditListDialog.tsx";
+import {EmptyState, ErrorState, StaleFeedBanner, TableSkeleton} from "./../TableStates.tsx";
+import {useAppDispatch, useAppSelector} from "../../store/store.ts";
+import {fetchSecurities} from "../../store/securitiesSlice.ts";
+import {feedStarted, feedStopped} from "../../store/feed/feedSlice.ts";
+import {
+    activeListChanged,
+    defaultToggled,
+    listCreated,
+    listDeleted,
+    listRenamed,
+    securityRemoved,
+    securityReordered,
+    securityToggled,
+} from "../../store/listsSlice.ts";
+import {
+    selectActiveList,
+    selectActiveRows,
+    selectAllSecurities,
+    selectError,
+    selectFeedIsStale,
+    selectLists,
+    selectStatus,
+} from "../../store/selectors.ts";
 
 export function Watchlist() {
-    const {securities, status, error, reload} = useLiveSecurities();
-    const byId = useMemo(
-        () => new Map(securities.map((security) => [security.id, security])),
-        [securities],
-    );
+    const dispatch = useAppDispatch();
+    const lists = useAppSelector(selectLists);
+    const activeList = useAppSelector(selectActiveList);
+    const rows = useAppSelector(selectActiveRows);
+    const allSecurities = useAppSelector(selectAllSecurities);
+    const status = useAppSelector(selectStatus);
+    const error = useAppSelector(selectError);
+    const feedIsStale = useAppSelector(selectFeedIsStale);
 
-    const [lists, setLists] = useState(watchlists);
-    const [activeId, setActiveId] =
-        useState((watchlists.find((list) => list.isDefault) ?? watchlists[0]).id,);
     const [dialog, setDialog] = useState<'add' | 'edit' | 'create' | 'rename' | null>(null);
 
-    const activeList = lists.find((list) => list.id === activeId) ?? lists[0];
+    useEffect(() => {
+        dispatch(fetchSecurities());
+    }, [dispatch]);
 
-    const rows = activeList.securityIds
-        .map((id) => byId.get(id))
-        .filter((security): security is WatchlistSecurity => security !== undefined);
-
-    const updateActive = (change: (ids: string[]) => string[]) => {
-        setLists((current) => current.map((list) => (
-            list.id === activeList.id ? {...list, securityIds: change(list.securityIds)} : list
-        )));
-    };
-
-    const toggleSecurity = (securityId: string) => updateActive((ids) => (
-        ids.includes(securityId) ? ids.filter((id) => id !== securityId) : [...ids, securityId]
-    ));
-
-    const removeSecurity = (securityId: string) => updateActive(
-        (ids) => ids.filter((id) => id !== securityId),
-    );
-
-    const reorderSecurity = (from: number, to: number) => updateActive((ids) => {
-        const next = [...ids];
-        const [moved] = next.splice(from, 1);
-        next.splice(to, 0, moved);
-        return next;
-    });
-
-    const createList = (name: string) => {
-        const list = {id: `wl-${Date.now()}`, name, securityIds: []};
-        setLists((current) => [...current, list]);
-        setActiveId(list.id);
-        setDialog(null);
-    };
-
-    const renameList = (name: string) => {
-        setLists((current) => current.map((list) => (
-            list.id === activeList.id ? {...list, name} : list
-        )));
-        setDialog(null);
-    };
-
-    const deleteList = () => {
-        if (lists.length === 1) return;
-        const remaining = lists.filter((list) => list.id !== activeList.id);
-        setLists(remaining);
-        setActiveId(remaining[0].id);
-    };
-
-    const toggleDefault = () => {
-        const makeDefault = !activeList.isDefault;
-        setLists((current) => current.map((list) => ({
-            ...list,
-            isDefault: makeDefault && list.id === activeList.id,
-        })));
-    };
+    useEffect(() => {
+        if (status !== 'succeeded') return;
+        dispatch(feedStarted());
+        return () => {
+            dispatch(feedStopped());
+        };
+    }, [status, dispatch]);
 
     const columns: Column<WatchlistSecurity>[] = [
         {
@@ -177,50 +150,74 @@ export function Watchlist() {
             render: (security) => (
                 <RowMenu
                     securityName={security.nameHe}
-                    onRemove={() => removeSecurity(security.id)}
+                    onRemove={() => dispatch(securityRemoved(security.id))}
                 />
             ),
         },
     ];
 
+    const bodyByStateStatus = () => {
+        if (status === 'loading' || status === 'idle') return <TableSkeleton/>;
+
+        if (status === 'failed') {
+            return (
+                <ErrorState
+                    message={error ?? 'טעינת הנתונים נכשלה'}
+                    onRetry={() => dispatch(fetchSecurities())}
+                />
+            );
+        }
+
+        if (lists.length === 0) {
+            return (
+                <EmptyState
+                    title="אין רשימות"
+                    description="צרו רשימה כדי להתחיל לעקוב אחרי ניירות"
+                    actionLabel="רשימה חדשה"
+                    onAction={() => setDialog('create')}
+                />
+            );
+        }
+
+        if (rows.length === 0) {
+            return (
+                <EmptyState
+                    title="הרשימה ריקה"
+                    description="הוסיפו ניירות כדי לראות אותם כאן"
+                    actionLabel="+ הוסף נייר"
+                    onAction={() => setDialog('add')}
+                />
+            );
+        }
+
+        return <DataTable columns={columns} rows={rows} rowKey={(security) => security.id}/>;
+    };
+
     return (
         <div className="w-full" dir="rtl">
-            <WatchlistToolbar
-                lists={lists}
-                activeList={activeList}
-                onSelect={setActiveId}
-                onCreate={() => setDialog('create')}
-                onAdd={() => setDialog('add')}
-                onEdit={() => setDialog('edit')}
-                onRename={() => setDialog('rename')}
-                onDelete={deleteList}
-                onToggleDefault={toggleDefault}
-            />
-
-            {status === 'loading' && <TableSkeleton/>}
-
-            {status === 'failed' && (
-                <ErrorState message={error ?? 'טעינת הנתונים נכשלה'} onRetry={reload}/>
+            {activeList && (
+                <WatchlistToolbar
+                    lists={lists}
+                    activeList={activeList}
+                    onSelect={(id) => dispatch(activeListChanged(id))}
+                    onCreate={() => setDialog('create')}
+                    onAdd={() => setDialog('add')}
+                    onEdit={() => setDialog('edit')}
+                    onRename={() => setDialog('rename')}
+                    onDelete={() => dispatch(listDeleted())}
+                    onToggleDefault={() => dispatch(defaultToggled())}
+                />
             )}
 
-            {/*{status === 'succeeded' && rows.length === 0 && (*/}
-            {/*    <EmptyState*/}
-            {/*        title="הרשימה ריקה"*/}
-            {/*        description="הוסיפו ניירות כדי לראות אותם כאן"*/}
-            {/*        actionLabel="+ הוסף נייר"*/}
-            {/*        onAction={() => setDialog('add')}*/}
-            {/*    />*/}
-            {/*)}*/}
+            {feedIsStale && <StaleFeedBanner/>}
 
-            {status === 'succeeded' && rows.length > 0 && (
-                <DataTable columns={columns} rows={rows} rowKey={(security) => security.id}/>
-            )}
+            {bodyByStateStatus()}
 
-            {dialog === 'add' && (
+            {dialog === 'add' && activeList && (
                 <AddSecurityDialog
-                    securities={mockWatchlist}
+                    securities={allSecurities}
                     selectedIds={activeList.securityIds}
-                    onToggle={toggleSecurity}
+                    onToggle={(id) => dispatch(securityToggled(id))}
                     onClose={() => setDialog(null)}
                 />
             )}
@@ -230,12 +227,15 @@ export function Watchlist() {
                     title="רשימה חדשה"
                     submitLabel="יצירה"
                     takenNames={lists.map((list) => list.name)}
-                    onSubmit={createList}
+                    onSubmit={(name) => {
+                        dispatch(listCreated(name));
+                        setDialog(null);
+                    }}
                     onClose={() => setDialog(null)}
                 />
             )}
 
-            {dialog === 'rename' && (
+            {dialog === 'rename' && activeList && (
                 <ListNameDialog
                     title="שינוי שם"
                     submitLabel="שמירה"
@@ -243,7 +243,10 @@ export function Watchlist() {
                     takenNames={lists
                         .filter((list) => list.id !== activeList.id)
                         .map((list) => list.name)}
-                    onSubmit={renameList}
+                    onSubmit={(name) => {
+                        dispatch(listRenamed(name));
+                        setDialog(null);
+                    }}
                     onClose={() => setDialog(null)}
                 />
             )}
@@ -251,11 +254,11 @@ export function Watchlist() {
             {dialog === 'edit' && (
                 <EditListDialog
                     securities={rows}
-                    onReorder={reorderSecurity}
-                    onRemove={removeSecurity}
+                    onReorder={(from, to) => dispatch(securityReordered({from, to}))}
+                    onRemove={(id) => dispatch(securityRemoved(id))}
                     onClose={() => setDialog(null)}
                 />
             )}
         </div>
-    )
+    );
 }
