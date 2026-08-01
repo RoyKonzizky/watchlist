@@ -420,7 +420,7 @@ function toSecurity(seed: SecuritySeed): WatchlistSecurity {
         intraday: buildIntraday(seed, previousClose, random),
         weeklyBars: buildWeeklyBars(seed, random),
         return30d: seed.return30d,
-        return3y: seed.return3y,
+        // return3y: seed.return3y,
     };
 }
 

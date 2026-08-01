@@ -138,10 +138,10 @@ export function Watchlist() {
             render: (security) => <TrendBar security={security}/>,
         },
         {
-            key: 'return3y',
-            title: 'תשואה 3 שנים',
-            sorter: (a, b) => a.return3y - b.return3y,
-            render: (security) => <ReturnBadge value={security.return3y}/>,
+            key: 'return30d',
+            title: 'תשואה 30 ימים',
+            sorter: (a, b) => a.return30d - b.return30d,
+            render: (security) => <ReturnBadge value={security.return30d}/>,
         },
         {
             key: 'actions',
