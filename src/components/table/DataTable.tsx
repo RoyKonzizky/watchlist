@@ -15,39 +15,76 @@ interface DataTableProps<T> {
     rowKey: (row: T) => string;
 }
 
-type SortState = {key: string; direction: 'asc' | 'desc'} | null;
+type SortState = {
+    key: string;
+    direction: 'asc' | 'desc';
+} | null;
 
-export function DataTable<T>({columns, rows, rowKey}: DataTableProps<T>) {
+export function DataTable<T>({
+                                 columns,
+                                 rows,
+                                 rowKey,
+                             }: DataTableProps<T>) {
     const [sort, setSort] = useState<SortState>(null);
 
     const sortedRows = useMemo(() => {
-        if (!sort) return rows;
-        const sorter = columns.find((column) => column.key === sort.key)?.sorter;
-        if (!sorter) return rows;
+        if (!sort) {
+            return rows;
+        }
+
+        const sorter = columns.find(
+            (column) => column.key === sort.key,
+        )?.sorter;
+
+        if (!sorter) {
+            return rows;
+        }
 
         const sorted = [...rows].sort(sorter);
-        return sort.direction === 'asc' ? sorted : sorted.reverse();
+
+        return sort.direction === 'asc'
+            ? sorted
+            : sorted.reverse();
     }, [rows, columns, sort]);
 
     const toggleSort = (key: string) => {
         setSort((current) => {
-            if (current?.key !== key) return {key, direction: 'asc'};
-            if (current.direction === 'asc') return {key, direction: 'desc'};
+            if (current?.key !== key) {
+                return {
+                    key,
+                    direction: 'asc',
+                };
+            }
+
+            if (current.direction === 'asc') {
+                return {
+                    key,
+                    direction: 'desc',
+                };
+            }
+
             return null;
         });
     };
 
     return (
         <table
-            className="w-full min-w-[960px] lg:min-w-0"
-            style={{borderCollapse: 'collapse', fontSize: 14}}
+            className="w-full min-w-[960px]"
+            style={{
+                borderCollapse: 'collapse',
+                fontSize: 14,
+            }}
         >
             <thead>
             <tr>
                 {columns.map((column) => (
                     <th
                         key={column.key}
-                        onClick={column.sorter ? () => toggleSort(column.key) : undefined}
+                        onClick={
+                            column.sorter
+                                ? () => toggleSort(column.key)
+                                : undefined
+                        }
                         style={{
                             width: column.width,
                             padding: '6px 16px',
@@ -59,20 +96,34 @@ export function DataTable<T>({columns, rows, rowKey}: DataTableProps<T>) {
                             fontWeight: 600,
                             color: '#111827',
                             whiteSpace: 'nowrap',
-                            cursor: column.sorter ? 'pointer' : 'default',
+                            cursor: column.sorter
+                                ? 'pointer'
+                                : 'default',
                             userSelect: 'none',
                         }}
                     >
                         {column.title}
+
                         {column.sorter && (
-                            <span style={{marginInlineStart: 6, color: '#9ca3af', fontSize: 10}}>
-                                {sort?.key === column.key ? (sort.direction === 'asc' ? '▲' : '▼') : '⇅'}
-                            </span>
+                            <span
+                                style={{
+                                    marginInlineStart: 6,
+                                    color: '#9ca3af',
+                                    fontSize: 10,
+                                }}
+                            >
+                                    {sort?.key === column.key
+                                        ? sort.direction === 'asc'
+                                            ? '▲'
+                                            : '▼'
+                                        : '⇅'}
+                                </span>
                         )}
                     </th>
                 ))}
             </tr>
             </thead>
+
             <tbody>
             {sortedRows.map((row) => (
                 <tr key={rowKey(row)}>
