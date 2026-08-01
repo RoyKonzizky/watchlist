@@ -39,13 +39,9 @@ export function WatchlistToolbar({
     };
 
     return (
-        <div className="relative flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-2.5">
+        <div className="relative flex items-center justify-between border-b border-slate-100 py-2.5">
             {open && (
-                <div
-                    role="presentation"
-                    onClick={() => setOpen(null)}
-                    className="fixed inset-0 z-20"
-                />
+                <div onClick={() => setOpen(null)} className="fixed inset-0 z-20"/>
             )}
 
             <div className="relative">
@@ -88,11 +84,11 @@ export function WatchlistToolbar({
                 <button
                     type="button"
                     onClick={onAdd}
-                    className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2
-                        text-sm text-white transition-colors hover:bg-blue-700"
+                    className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-blue-800 px-4 py-2
+                        text-sm text-white transition-colors hover:bg-blue-900"
                 >
-                    <Plus size={15}/>
                     הוסף נייר
+                    <Plus size={15}/>
                 </button>
 
                 <button

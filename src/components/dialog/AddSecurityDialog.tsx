@@ -5,7 +5,6 @@ import { Modal } from "../Modal.tsx";
 
 interface AddSecurityDialogProps {
     securities: WatchlistSecurity[];
-    /** Ids already in the list being edited. */
     selectedIds: string[];
     onToggle: (id: string) => void;
     onClose: () => void;
@@ -13,7 +12,6 @@ interface AddSecurityDialogProps {
 
 const ALL_TAB = 'הכל';
 
-/** Search dialog for putting securities into the active list. */
 export function AddSecurityDialog({
                                       securities,
                                       selectedIds,

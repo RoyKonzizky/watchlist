@@ -31,7 +31,6 @@ export function EditListDialog({securities, onReorder, onRemove, onClose}: EditL
                         className="wl-edit-row"
                         draggable
                         onDragStart={() => setDraggedIndex(index)}
-                        // Without preventDefault the drop event never fires.
                         onDragOver={(event) => {
                             event.preventDefault();
                             setOverIndex(index);

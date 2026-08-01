@@ -47,7 +47,7 @@ export function ListNameDialog({
                     aria-invalid={isTaken}
                     className={`mt-6 w-full border-b bg-transparent pb-2 text-center text-lg
                         outline-none transition-colors ${
-                        isTaken ? 'border-red-400' : 'border-slate-300 focus:border-blue-600'
+                        isTaken ? 'border-red-400' : 'border-slate-300'
                     }`}
                 />
 

@@ -38,7 +38,10 @@ export function DataTable<T>({columns, rows, rowKey}: DataTableProps<T>) {
     };
 
     return (
-        <table style={{width: '100%', borderCollapse: 'collapse', fontSize: 14}}>
+        <table
+            className="w-full min-w-[960px] lg:min-w-0"
+            style={{borderCollapse: 'collapse', fontSize: 14}}
+        >
             <thead>
             <tr>
                 {columns.map((column) => (

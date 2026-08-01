@@ -194,71 +194,74 @@ export function Watchlist() {
     };
 
     return (
-        <div className="w-full" dir="rtl">
-            {activeList && (
-                <WatchlistToolbar
-                    lists={lists}
-                    activeList={activeList}
-                    onSelect={(id) => dispatch(activeListChanged(id))}
-                    onCreate={() => setDialog('create')}
-                    onAdd={() => setDialog('add')}
-                    onEdit={() => setDialog('edit')}
-                    onRename={() => setDialog('rename')}
-                    onDelete={() => dispatch(listDeleted())}
-                    onToggleDefault={() => dispatch(defaultToggled())}
-                />
-            )}
+        <div className="w-full overflow-x-auto lg:overflow-x-visible" dir="rtl">
+            <div className="inline-block min-w-full align-top">
+                {activeList && (
+                    <WatchlistToolbar
+                        lists={lists}
+                        activeList={activeList}
+                        onSelect={(id) => dispatch(activeListChanged(id))}
+                        onCreate={() => setDialog('create')}
+                        onAdd={() => setDialog('add')}
+                        onEdit={() => setDialog('edit')}
+                        onRename={() => setDialog('rename')}
+                        onDelete={() => dispatch(listDeleted())}
+                        onToggleDefault={() => dispatch(defaultToggled())}
+                    />
+                )}
 
-            {feedIsStale && <StaleFeedBanner/>}
+                {feedIsStale && <StaleFeedBanner/>}
 
-            {bodyByStateStatus()}
+                {bodyByStateStatus()}
 
-            {dialog === 'add' && activeList && (
-                <AddSecurityDialog
-                    securities={allSecurities}
-                    selectedIds={activeList.securityIds}
-                    onToggle={(id) => dispatch(securityToggled(id))}
-                    onClose={() => setDialog(null)}
-                />
-            )}
+                {dialog === 'add' && activeList && (
+                    <AddSecurityDialog
+                        securities={allSecurities}
+                        selectedIds={activeList.securityIds}
+                        onToggle={(id) => dispatch(securityToggled(id))}
+                        onClose={() => setDialog(null)}
+                    />
+                )}
 
-            {dialog === 'create' && (
-                <ListNameDialog
-                    title="רשימה חדשה"
-                    submitLabel="יצירה"
-                    takenNames={lists.map((list) => list.name)}
-                    onSubmit={(name) => {
-                        dispatch(listCreated(name));
-                        setDialog(null);
-                    }}
-                    onClose={() => setDialog(null)}
-                />
-            )}
+                {dialog === 'create' && (
+                    <ListNameDialog
+                        title="רשימה חדשה"
+                        submitLabel="יצירה"
+                        takenNames={lists.map((list) => list.name)}
+                        onSubmit={(name) => {
+                            dispatch(listCreated(name));
+                            setDialog(null);
+                        }}
+                        onClose={() => setDialog(null)}
+                    />
+                )}
 
-            {dialog === 'rename' && activeList && (
-                <ListNameDialog
-                    title="שינוי שם"
-                    submitLabel="שמירה"
-                    initialName={activeList.name}
-                    takenNames={lists
-                        .filter((list) => list.id !== activeList.id)
-                        .map((list) => list.name)}
-                    onSubmit={(name) => {
-                        dispatch(listRenamed(name));
-                        setDialog(null);
-                    }}
-                    onClose={() => setDialog(null)}
-                />
-            )}
+                {dialog === 'rename' && activeList && (
+                    <ListNameDialog
+                        title="שינוי שם"
+                        submitLabel="שמירה"
+                        initialName={activeList.name}
+                        takenNames={lists
+                            .filter((list) => list.id !== activeList.id)
+                            .map((list) => list.name)}
+                        onSubmit={(name) => {
+                            dispatch(listRenamed(name));
+                            setDialog(null);
+                        }}
+                        onClose={() => setDialog(null)}
+                    />
+                )}
 
-            {dialog === 'edit' && (
-                <EditListDialog
-                    securities={rows}
-                    onReorder={(from, to) => dispatch(securityReordered({from, to}))}
-                    onRemove={(id) => dispatch(securityRemoved(id))}
-                    onClose={() => setDialog(null)}
-                />
-            )}
+                {dialog === 'edit' && (
+                    <EditListDialog
+                        securities={rows}
+                        onReorder={(from, to) => dispatch(securityReordered({from, to}))}
+                        onRemove={(id) => dispatch(securityRemoved(id))}
+                        onClose={() => setDialog(null)}
+                    />
+                )}
+
+            </div>
         </div>
     );
 }
