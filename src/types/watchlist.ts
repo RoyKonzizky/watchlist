@@ -84,5 +84,5 @@ export interface WatchlistSecurity {
     /** תשואה 30 ימים – trailing 30-day return in percent. */
     return30d: number;
     /** תשואה 3 שנים – trailing 3-year return in percent. */
-    // return3y: number;
+    return3y: number;
 }

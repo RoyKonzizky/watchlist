@@ -51,7 +51,6 @@ export function ListNameDialog({
                     }`}
                 />
 
-                {/* The counter is latin, so it keeps its own direction. */}
                 <div className="mt-1.5 text-xs text-slate-400">
                     <bdi>{name.length}/{MAX_LENGTH}</bdi>
                 </div>

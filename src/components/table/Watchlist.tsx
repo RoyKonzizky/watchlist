@@ -174,6 +174,7 @@ export function Watchlist() {
         },
         {
             key: 'dailyRange',
+            width: 60,
             title: 'נמוך/גבוה יומי',
             render: (security) => (
                 <DailyRange security={security}/>
@@ -181,6 +182,7 @@ export function Watchlist() {
         },
         {
             key: 'minichart',
+            width: 60,
             title: 'גרף יומי',
             render: (security) => (
                 <MiniChart security={security}/>
@@ -188,6 +190,7 @@ export function Watchlist() {
         },
         {
             key: 'techRating',
+            width: 60,
             title: 'טרנד בר',
             render: (security) => (
                 <TrendBar security={security}/>
@@ -195,6 +198,7 @@ export function Watchlist() {
         },
         {
             key: 'return30d',
+            width: 50,
             title: 'תשואה 30 ימים',
             sorter: (a, b) =>
                 a.return30d - b.return30d,

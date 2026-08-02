@@ -3,7 +3,7 @@ import {Watchlist} from "./components/table/Watchlist.tsx";
 function App() {
 
     return (
-        <div className="mx-4 sm:mx-10 lg:mx-14">
+        <div className="mx-10 sm:mx-16 lg:mx-30">
             <Watchlist/>
         </div>
     );

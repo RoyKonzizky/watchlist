@@ -11,10 +11,6 @@ interface ModalProps {
     width?: number;
 }
 
-/**
- * Centred dialog on a dimmed backdrop.
- * Closes on Escape or a backdrop click.
- */
 export function Modal({
                           title,
                           onClose,

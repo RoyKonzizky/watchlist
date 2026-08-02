@@ -32,35 +32,20 @@ export function EditListDialog({
                                    onRemove,
                                    onClose,
                                }: EditListDialogProps) {
-    const [draggedIndex, setDraggedIndex] =
-        useState<number | null>(null);
+    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+    const [overIndex, setOverIndex] = useState<number | null>(null);
+    const [dragOffsetY, setDragOffsetY] = useState(0);
 
-    const [overIndex, setOverIndex] =
-        useState<number | null>(null);
+    const draggedIndexRef = useRef<number | null>(null);
+    const overIndexRef = useRef<number | null>(null);
 
-    const [dragOffsetY, setDragOffsetY] =
-        useState(0);
+    const activePointerIdRef = useRef<number | null>(null);
+    const pointerStartYRef = useRef(0);
+    const initialScrollTopRef = useRef(0);
 
-    const draggedIndexRef =
-        useRef<number | null>(null);
+    const scrollBodyRef = useRef<HTMLElement | null>(null);
 
-    const overIndexRef =
-        useRef<number | null>(null);
-
-    const activePointerIdRef =
-        useRef<number | null>(null);
-
-    const pointerStartYRef =
-        useRef(0);
-
-    const initialScrollTopRef =
-        useRef(0);
-
-    const scrollBodyRef =
-        useRef<HTMLElement | null>(null);
-
-    const rowRefs =
-        useRef<Array<HTMLDivElement | null>>([]);
+    const rowRefs = useRef<Array<HTMLDivElement | null>>([]);
 
     const resetDrag = () => {
         draggedIndexRef.current = null;
@@ -372,47 +357,21 @@ export function EditListDialog({
                                 className="wl-edit-row"
                                 style={{
                                     display: "flex",
-                                    alignItems:
-                                        "center",
-                                    justifyContent:
-                                        "space-between",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
                                     gap: 12,
-                                    padding:
-                                        "10px 12px",
+                                    padding: "10px 12px",
                                     marginTop: 8,
                                     borderRadius: 10,
-                                    border:
-                                        "1px solid #f0f0f0",
-                                    background:
-                                        isDropTarget
-                                            ? "#eaf2ff"
-                                            : "#fff",
-                                    opacity:
-                                        isDragged
-                                            ? 0.4
-                                            : 1,
-                                    position:
-                                        isDragged
-                                            ? "relative"
-                                            : undefined,
-                                    zIndex:
-                                        isDragged
-                                            ? 2
-                                            : undefined,
-                                    transform:
-                                        isDragged
-                                            ? `translateY(${dragOffsetY}px)`
-                                            : undefined,
-                                    pointerEvents:
-                                        isDragged
-                                            ? "none"
-                                            : undefined,
-                                    userSelect:
-                                        "none",
-                                    transition:
-                                        isDragged
-                                            ? "none"
-                                            : "background 120ms ease",
+                                    border: "1px solid #f0f0f0",
+                                    background: isDropTarget ? "#eaf2ff" : "#fff",
+                                    opacity: isDragged ? 0.4 : 1,
+                                    position: isDragged ? "relative" : undefined,
+                                    zIndex: isDragged ? 2 : undefined,
+                                    transform: isDragged ? `translateY(${dragOffsetY}px)` : undefined,
+                                    pointerEvents: isDragged ? "none" : undefined,
+                                    userSelect: "none",
+                                    transition: isDragged ? "none" : "background 120ms ease",
                                 }}
                             >
                                 <button
@@ -424,25 +383,19 @@ export function EditListDialog({
                                     }
                                     aria-label={`הסרת ${security.nameHe}`}
                                     style={{
-                                        display:
-                                            "flex",
-                                        alignItems:
-                                            "center",
-                                        justifyContent:
-                                            "center",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
                                         height: 24,
                                         width: 24,
                                         flexShrink: 0,
-                                        borderRadius:
-                                            "50%",
+                                        borderRadius: "50%",
                                         border: "none",
-                                        background:
-                                            "#f87171",
+                                        background: "#f87171",
                                         color: "#fff",
                                         fontSize: 15,
                                         lineHeight: 1,
-                                        cursor:
-                                            "pointer",
+                                        cursor: "pointer",
                                     }}
                                 >
                                     <Minus size={15}/>
@@ -451,14 +404,12 @@ export function EditListDialog({
                                 <div
                                     style={{
                                         flex: 1,
-                                        textAlign:
-                                            "center",
+                                        textAlign: "center",
                                     }}
                                 >
                                     <div
                                         style={{
-                                            fontWeight:
-                                                600,
+                                            fontWeight: 600,
                                             fontSize: 14,
                                         }}
                                     >
@@ -470,8 +421,7 @@ export function EditListDialog({
                                     <div
                                         style={{
                                             fontSize: 12,
-                                            color:
-                                                "#9ca3af",
+                                            color: "#9ca3af",
                                         }}
                                     >
                                         {
@@ -492,21 +442,13 @@ export function EditListDialog({
                                         )
                                     }
                                     style={{
-                                        display:
-                                            "flex",
-                                        alignItems:
-                                            "center",
-                                        justifyContent:
-                                            "center",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
                                         padding: 4,
-                                        cursor:
-                                            isDragged
-                                                ? "grabbing"
-                                                : "grab",
-                                        touchAction:
-                                            "none",
-                                        userSelect:
-                                            "none",
+                                        cursor: isDragged ? "grabbing" : "grab",
+                                        touchAction: "none",
+                                        userSelect: "none",
                                     }}
                                 >
                                     <GripVertical
@@ -521,12 +463,9 @@ export function EditListDialog({
                 {securities.length === 0 && (
                     <p
                         style={{
-                            padding:
-                                "24px 0",
-                            textAlign:
-                                "center",
-                            color:
-                                "#9ca3af",
+                            padding: "24px 0",
+                            textAlign: "center",
+                            color: "#9ca3af",
                             fontSize: 14,
                         }}
                     >

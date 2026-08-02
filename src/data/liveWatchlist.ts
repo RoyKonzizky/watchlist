@@ -62,7 +62,7 @@ export function tickSecurity(security: WatchlistSecurity, now = new Date()): Wat
             .slice(-INTRADAY_WINDOW),
         weeklyBars,
         return30d: Math.round((security.return30d + percentDelta) * 100) / 100,
-        // return3y: Math.round((security.return3y + percentDelta) * 100) / 100,
+        return3y: Math.round((security.return3y + percentDelta) * 100) / 100,
     };
 }
 
