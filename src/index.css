@@ -19,7 +19,7 @@
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
-  color-scheme: light;
+  color-scheme: only light;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -34,7 +34,7 @@
 
 html {
   min-height: 100%;
-  color-scheme: light !important;
+  color-scheme: only light !important;
   background: var(--bg);
 }
 
@@ -51,7 +51,7 @@ html {
   box-sizing: border-box;
   background: var(--bg);
   color: var(--text);
-  color-scheme: light;
+  color-scheme: only light;
 }
 
 body {
@@ -59,7 +59,7 @@ body {
   min-height: 100svh;
   background: var(--bg);
   color: var(--text);
-  color-scheme: light;
+  color-scheme: only light;
 }
 
 button,
@@ -67,7 +67,7 @@ input,
 select,
 textarea {
   font-family: inherit;
-  color-scheme: light;
+  color-scheme: only light;
 }
 
 h1,
