@@ -292,9 +292,9 @@ export function Watchlist() {
                     onSelect={(id) =>
                         dispatch(activeListChanged(id))
                     }
-                    onCreate={() =>
-                        setDialog('create')
-                    }
+                    // onCreate={() =>
+                    //     setDialog('create')
+                    // }
                     onAdd={() =>
                         setDialog('add')
                     }
