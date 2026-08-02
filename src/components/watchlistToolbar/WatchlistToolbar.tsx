@@ -9,7 +9,7 @@ interface WatchlistToolbarProps {
     lists: SecurityList[];
     activeList: SecurityList;
     onSelect: (id: string) => void;
-    onCreate: () => void;
+    // onCreate: () => void;
     onAdd: () => void;
     onEdit: () => void;
     onRename: () => void;
@@ -25,7 +25,7 @@ export function WatchlistToolbar({
                                      lists,
                                      activeList,
                                      onSelect,
-                                     onCreate,
+                                     // onCreate,
                                      onAdd,
                                      onEdit,
                                      onRename,
