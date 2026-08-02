@@ -37,11 +37,10 @@ import {
     listCreated,
     listDeleted,
     listRenamed,
+    securityIdsSaved,
     securityRemoved,
-    securityReordered,
     securityToggled,
-} from "../../store/listsSlice.ts";
-import {
+} from "../../store/listsSlice.ts";import {
     selectActiveList,
     selectActiveRows,
     selectAllSecurities,
@@ -86,6 +85,7 @@ export function Watchlist() {
         {
             key: 'name',
             title: 'שם וסמל',
+            width: 300,
             sorter: (a, b) =>
                 a.nameHe.localeCompare(b.nameHe, 'he'),
             render: (security) => (
@@ -382,22 +382,11 @@ export function Watchlist() {
             {dialog === 'edit' && (
                 <EditListDialog
                     securities={rows}
-                    onReorder={(from, to) =>
-                        dispatch(
-                            securityReordered({
-                                from,
-                                to,
-                            }),
-                        )
-                    }
-                    onRemove={(id) =>
-                        dispatch(
-                            securityRemoved(id),
-                        )
-                    }
-                    onClose={() =>
-                        setDialog(null)
-                    }
+                    onSave={(securityIds) => {
+                        dispatch(securityIdsSaved(securityIds));
+                        setDialog(null);
+                    }}
+                    onClose={() => setDialog(null)}
                 />
             )}
         </div>

@@ -1,477 +1,418 @@
+import {useMemo, useState} from "react";
+import {createPortal} from "react-dom";
 import {
-    useEffect,
-    useRef,
-    useState,
-    type PointerEvent as ReactPointerEvent,
-} from "react";
+    closestCenter,
+    DndContext,
+    DragOverlay,
+    KeyboardSensor,
+    MouseSensor,
+    TouchSensor,
+    useSensor,
+    useSensors,
+    type DragEndEvent,
+    type DragStartEvent,
+} from "@dnd-kit/core";
 import {
-    GripVertical,
-    Minus,
-} from "lucide-react";
-import type {
-    WatchlistSecurity,
-} from "../../types/watchlist.ts";
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import {CSS} from "@dnd-kit/utilities";
+import {restrictToVerticalAxis} from "@dnd-kit/modifiers";
+import {GripVertical, Minus} from "lucide-react";
+import type {WatchlistSecurity} from "../../types/watchlist.ts";
 import {Modal} from "../Modal.tsx";
 
 interface EditListDialogProps {
     securities: WatchlistSecurity[];
-    onReorder: (
-        from: number,
-        to: number,
-    ) => void;
-    onRemove: (id: string) => void;
+    onSave: (securityIds: string[]) => void;
     onClose: () => void;
 }
 
-type GripPointerEvent =
-    ReactPointerEvent<HTMLSpanElement>;
+interface SortableSecurityRowProps {
+    security: WatchlistSecurity;
+    onRemove: (id: string) => void;
+}
+
+function SortableSecurityRow({security, onRemove}: SortableSecurityRowProps) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        setActivatorNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({
+        id: security.id,
+        transition: {
+            duration: 180,
+            easing: "cubic-bezier(0.25, 1, 0.5, 1)",
+        },
+    });
+
+    return (
+        <div
+            ref={setNodeRef}
+            className="wl-edit-row"
+            style={{
+                display: "flex",
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                padding: "10px 12px",
+                marginTop: 8,
+                boxSizing: "border-box",
+                position: "relative",
+                zIndex: isDragging ? 2 : 1,
+                border: "1px solid #f0f0f0",
+                borderRadius: 10,
+                background: "#fff",
+                opacity: isDragging ? 0.25 : 1,
+                transform: CSS.Transform.toString(transform),
+                transition,
+                userSelect: "none",
+            }}
+        >
+            <button
+                type="button"
+                onClick={() => onRemove(security.id)}
+                aria-label={`הסרת ${security.nameHe}`}
+                style={{
+                    display: "flex",
+                    width: 24,
+                    height: 24,
+                    flexShrink: 0,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: 0,
+                    border: "none",
+                    borderRadius: "50%",
+                    background: "#f87171",
+                    color: "#fff",
+                    lineHeight: 1,
+                    cursor: "pointer",
+                }}
+            >
+                <Minus size={15}/>
+            </button>
+
+            <div style={{flex: 1, minWidth: 0, textAlign: "center"}}>
+                <div
+                    style={{
+                        overflow: "hidden",
+                        color: "#374151",
+                        fontSize: 14,
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {security.nameHe}
+                </div>
+
+                <div
+                    style={{
+                        overflow: "hidden",
+                        color: "#9ca3af",
+                        fontSize: 12,
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {security.securityNumber}
+                </div>
+            </div>
+
+            <button
+                ref={setActivatorNodeRef}
+                type="button"
+                {...attributes}
+                {...listeners}
+                title="גרירה לשינוי סדר"
+                aria-label={`שינוי מיקום ${security.nameHe}`}
+                style={{
+                    display: "flex",
+                    width: 30,
+                    height: 30,
+                    flexShrink: 0,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: 0,
+                    border: "none",
+                    borderRadius: 7,
+                    background: "transparent",
+                    color: "#94a3b8",
+                    cursor: isDragging ? "grabbing" : "grab",
+                    touchAction: "none",
+                    userSelect: "none",
+                }}
+            >
+                <GripVertical size={16}/>
+            </button>
+        </div>
+    );
+}
+
+function DragPreview({security}: {security: WatchlistSecurity}) {
+    return (
+        <div
+            dir="rtl"
+            style={{
+                display: "flex",
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 12,
+                padding: "10px 12px",
+                boxSizing: "border-box",
+                border: "1px solid #cbd5e1",
+                borderRadius: 10,
+                background: "#f8fafc",
+                boxShadow: "0 12px 28px rgba(15, 23, 42, 0.2)",
+                transform: "scale(1.015)",
+                userSelect: "none",
+            }}
+        >
+            <span
+                style={{
+                    display: "flex",
+                    width: 24,
+                    height: 24,
+                    flexShrink: 0,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "50%",
+                    background: "#f87171",
+                    color: "#fff",
+                }}
+            >
+                <Minus size={15}/>
+            </span>
+
+            <div style={{flex: 1, minWidth: 0, textAlign: "center"}}>
+                <div
+                    style={{
+                        overflow: "hidden",
+                        color: "#374151",
+                        fontSize: 14,
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {security.nameHe}
+                </div>
+
+                <div
+                    style={{
+                        overflow: "hidden",
+                        color: "#9ca3af",
+                        fontSize: 12,
+                        whiteSpace: "nowrap",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {security.securityNumber}
+                </div>
+            </div>
+
+            <span
+                style={{
+                    display: "flex",
+                    width: 30,
+                    height: 30,
+                    flexShrink: 0,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#64748b",
+                }}
+            >
+                <GripVertical size={16}/>
+            </span>
+        </div>
+    );
+}
 
 export function EditListDialog({
                                    securities,
-                                   onReorder,
-                                   onRemove,
+                                   onSave,
                                    onClose,
                                }: EditListDialogProps) {
-    const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
-    const [overIndex, setOverIndex] = useState<number | null>(null);
-    const [dragOffsetY, setDragOffsetY] = useState(0);
+    const originalIds = useMemo(
+        () => securities.map((security) => security.id),
+        [securities],
+    );
 
-    const draggedIndexRef = useRef<number | null>(null);
-    const overIndexRef = useRef<number | null>(null);
+    const securitiesById = useMemo(
+        () => Object.fromEntries(securities.map((security) => [security.id, security])),
+        [securities],
+    );
 
-    const activePointerIdRef = useRef<number | null>(null);
-    const pointerStartYRef = useRef(0);
-    const initialScrollTopRef = useRef(0);
+    const [draftIds, setDraftIds] = useState<string[]>(() =>
+        securities.map((security) => security.id),
+    );
 
-    const scrollBodyRef = useRef<HTMLElement | null>(null);
+    const [activeId, setActiveId] = useState<string | null>(null);
 
-    const rowRefs = useRef<Array<HTMLDivElement | null>>([]);
+    const sensors = useSensors(
+        useSensor(MouseSensor, {
+            activationConstraint: {
+                distance: 5,
+            },
+        }),
+        useSensor(TouchSensor, {
+            activationConstraint: {
+                delay: 120,
+                tolerance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
 
-    const resetDrag = () => {
-        draggedIndexRef.current = null;
-        overIndexRef.current = null;
-        activePointerIdRef.current = null;
-        scrollBodyRef.current = null;
+    const draftSecurities = draftIds
+        .map((id) => securitiesById[id])
+        .filter((security): security is WatchlistSecurity => Boolean(security));
 
-        setDraggedIndex(null);
-        setOverIndex(null);
-        setDragOffsetY(0);
+    const activeSecurity = activeId ? securitiesById[activeId] : undefined;
+
+    const hasChanges =
+        draftIds.length !== originalIds.length ||
+        draftIds.some((id, index) => id !== originalIds[index]);
+
+    const handleDragStart = ({active}: DragStartEvent) => {
+        setActiveId(String(active.id));
     };
 
-    const findTargetIndex = (
-        pointerY: number,
-    ): number | null => {
-        const from = draggedIndexRef.current;
+    const handleDragEnd = ({active, over}: DragEndEvent) => {
+        setActiveId(null);
 
-        if (from === null) {
-            return null;
-        }
-
-        const rows = rowRefs.current
-            .map((element, index) => {
-                if (!element || index === from) {
-                    return null;
-                }
-
-                const rect =
-                    element.getBoundingClientRect();
-
-                return {
-                    index,
-                    top: rect.top,
-                    bottom: rect.bottom,
-                    center:
-                        rect.top +
-                        rect.height / 2,
-                };
-            })
-            .filter(
-                (
-                    row,
-                ): row is {
-                    index: number;
-                    top: number;
-                    bottom: number;
-                    center: number;
-                } => row !== null,
-            );
-
-        if (rows.length === 0) {
-            return from;
-        }
-
-        const rowUnderPointer = rows.find(
-            (row) =>
-                pointerY >= row.top &&
-                pointerY <= row.bottom,
-        );
-
-        if (rowUnderPointer) {
-            return rowUnderPointer.index;
-        }
-
-        let closestRow = rows[0];
-        let closestDistance = Math.abs(
-            pointerY - closestRow.center,
-        );
-
-        for (
-            let index = 1;
-            index < rows.length;
-            index += 1
-        ) {
-            const distance = Math.abs(
-                pointerY - rows[index].center,
-            );
-
-            if (distance < closestDistance) {
-                closestRow = rows[index];
-                closestDistance = distance;
-            }
-        }
-
-        return closestRow.index;
-    };
-
-    useEffect(() => {
-        const handlePointerMove = (
-            event: PointerEvent,
-        ) => {
-            if (
-                activePointerIdRef.current === null ||
-                event.pointerId !==
-                activePointerIdRef.current
-            ) {
-                return;
-            }
-
-            if (event.cancelable) {
-                event.preventDefault();
-            }
-
-            const scrollBody =
-                scrollBodyRef.current;
-
-            if (scrollBody) {
-                const bounds =
-                    scrollBody.getBoundingClientRect();
-
-                const edgeDistance = 50;
-                const scrollAmount = 14;
-
-                if (
-                    event.clientY <
-                    bounds.top + edgeDistance
-                ) {
-                    scrollBody.scrollTop -=
-                        scrollAmount;
-                } else if (
-                    event.clientY >
-                    bounds.bottom - edgeDistance
-                ) {
-                    scrollBody.scrollTop +=
-                        scrollAmount;
-                }
-            }
-
-            const scrollDifference =
-                (scrollBody?.scrollTop ?? 0) -
-                initialScrollTopRef.current;
-
-            const offset =
-                event.clientY -
-                pointerStartYRef.current +
-                scrollDifference;
-
-            setDragOffsetY(offset);
-
-            /*
-             * Do not switch rows from a tiny tap or
-             * accidental finger movement.
-             */
-            if (Math.abs(offset) < 8) {
-                return;
-            }
-
-            const nextTarget =
-                findTargetIndex(event.clientY);
-
-            if (
-                nextTarget === null ||
-                nextTarget ===
-                overIndexRef.current
-            ) {
-                return;
-            }
-
-            overIndexRef.current =
-                nextTarget;
-
-            setOverIndex(nextTarget);
-        };
-
-        const handlePointerUp = (
-            event: PointerEvent,
-        ) => {
-            if (
-                activePointerIdRef.current === null ||
-                event.pointerId !==
-                activePointerIdRef.current
-            ) {
-                return;
-            }
-
-            const from =
-                draggedIndexRef.current;
-
-            const to =
-                overIndexRef.current;
-
-            resetDrag();
-
-            if (
-                from !== null &&
-                to !== null &&
-                from !== to
-            ) {
-                onReorder(from, to);
-            }
-        };
-
-        const handlePointerCancel = (
-            event: PointerEvent,
-        ) => {
-            if (
-                activePointerIdRef.current === null ||
-                event.pointerId !==
-                activePointerIdRef.current
-            ) {
-                return;
-            }
-
-            resetDrag();
-        };
-
-        window.addEventListener(
-            "pointermove",
-            handlePointerMove,
-            {passive: false},
-        );
-
-        window.addEventListener(
-            "pointerup",
-            handlePointerUp,
-        );
-
-        window.addEventListener(
-            "pointercancel",
-            handlePointerCancel,
-        );
-
-        return () => {
-            window.removeEventListener(
-                "pointermove",
-                handlePointerMove,
-            );
-
-            window.removeEventListener(
-                "pointerup",
-                handlePointerUp,
-            );
-
-            window.removeEventListener(
-                "pointercancel",
-                handlePointerCancel,
-            );
-        };
-    }, [onReorder]);
-
-    const startDrag = (
-        event: GripPointerEvent,
-        index: number,
-    ) => {
-        if (
-            event.pointerType === "mouse" &&
-            event.button !== 0
-        ) {
+        if (!over || active.id === over.id) {
             return;
         }
 
-        event.preventDefault();
-        event.stopPropagation();
+        setDraftIds((current) => {
+            const oldIndex = current.indexOf(String(active.id));
+            const newIndex = current.indexOf(String(over.id));
 
-        activePointerIdRef.current =
-            event.pointerId;
+            if (oldIndex === -1 || newIndex === -1) {
+                return current;
+            }
 
-        draggedIndexRef.current = index;
-        overIndexRef.current = index;
+            return arrayMove(current, oldIndex, newIndex);
+        });
+    };
 
-        pointerStartYRef.current =
-            event.clientY;
+    const handleRemove = (id: string) => {
+        setDraftIds((current) => current.filter((securityId) => securityId !== id));
 
-        const scrollBody =
-            event.currentTarget.closest<HTMLElement>(
-                "[data-modal-scroll-body]",
-            );
-
-        scrollBodyRef.current =
-            scrollBody;
-
-        initialScrollTopRef.current =
-            scrollBody?.scrollTop ?? 0;
-
-        setDraggedIndex(index);
-        setOverIndex(index);
-        setDragOffsetY(0);
+        if (activeId === id) {
+            setActiveId(null);
+        }
     };
 
     return (
-        <Modal
-            title="עריכת רשימה"
-            onClose={onClose}
-            width={420}
-        >
+        <Modal title="עריכת רשימה" onClose={onClose} width={420}>
             <div
                 style={{
-                    padding: "0 18px 18px",
+                    display: "flex",
+                    minHeight: "100%",
+                    flexDirection: "column",
                 }}
             >
-                {securities.map(
-                    (security, index) => {
-                        const isDragged =
-                            draggedIndex === index;
+                <div style={{padding: "0 18px 16px"}}>
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        modifiers={[restrictToVerticalAxis]}
+                        onDragStart={handleDragStart}
+                        onDragCancel={() => setActiveId(null)}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <SortableContext
+                            items={draftIds}
+                            strategy={verticalListSortingStrategy}
+                        >
+                            {draftSecurities.map((security) => (
+                                <SortableSecurityRow
+                                    key={security.id}
+                                    security={security}
+                                    onRemove={handleRemove}
+                                />
+                            ))}
+                        </SortableContext>
 
-                        const isDropTarget =
-                            draggedIndex !== null &&
-                            overIndex === index &&
-                            draggedIndex !== index;
-
-                        return (
-                            <div
-                                key={security.id}
-                                ref={(element) => {
-                                    rowRefs.current[
-                                        index
-                                        ] = element;
-                                }}
-                                className="wl-edit-row"
-                                style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "space-between",
-                                    gap: 12,
-                                    padding: "10px 12px",
-                                    marginTop: 8,
-                                    borderRadius: 10,
-                                    border: "1px solid #f0f0f0",
-                                    background: isDropTarget ? "#eaf2ff" : "#fff",
-                                    opacity: isDragged ? 0.4 : 1,
-                                    position: isDragged ? "relative" : undefined,
-                                    zIndex: isDragged ? 2 : undefined,
-                                    transform: isDragged ? `translateY(${dragOffsetY}px)` : undefined,
-                                    pointerEvents: isDragged ? "none" : undefined,
-                                    userSelect: "none",
-                                    transition: isDragged ? "none" : "background 120ms ease",
-                                }}
-                            >
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        onRemove(
-                                            security.id,
-                                        )
-                                    }
-                                    aria-label={`הסרת ${security.nameHe}`}
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        height: 24,
-                                        width: 24,
-                                        flexShrink: 0,
-                                        borderRadius: "50%",
-                                        border: "none",
-                                        background: "#f87171",
-                                        color: "#fff",
-                                        fontSize: 15,
-                                        lineHeight: 1,
-                                        cursor: "pointer",
+                        {typeof document !== "undefined" &&
+                            createPortal(
+                                <DragOverlay
+                                    adjustScale={false}
+                                    zIndex={80}
+                                    dropAnimation={{
+                                        duration: 180,
+                                        easing: "cubic-bezier(0.25, 1, 0.5, 1)",
                                     }}
                                 >
-                                    <Minus size={15}/>
-                                </button>
+                                    {activeSecurity ? (
+                                        <DragPreview security={activeSecurity}/>
+                                    ) : null}
+                                </DragOverlay>,
+                                document.body,
+                            )}
+                    </DndContext>
 
-                                <div
-                                    style={{
-                                        flex: 1,
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            fontWeight: 600,
-                                            fontSize: 14,
-                                        }}
-                                    >
-                                        {
-                                            security.nameHe
-                                        }
-                                    </div>
+                    {draftSecurities.length === 0 && (
+                        <p
+                            style={{
+                                padding: "32px 0",
+                                textAlign: "center",
+                                color: "#9ca3af",
+                                fontSize: 14,
+                            }}
+                        >
+                            הרשימה ריקה
+                        </p>
+                    )}
+                </div>
 
-                                    <div
-                                        style={{
-                                            fontSize: 12,
-                                            color: "#9ca3af",
-                                        }}
-                                    >
-                                        {
-                                            security.securityNumber
-                                        }
-                                    </div>
-                                </div>
-
-                                <span
-                                    title="גרירה לשינוי סדר"
-                                    className="cursor-grab text-slate-400"
-                                    onPointerDown={(
-                                        event,
-                                    ) =>
-                                        startDrag(
-                                            event,
-                                            index,
-                                        )
-                                    }
-                                    style={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        padding: 4,
-                                        cursor: isDragged ? "grabbing" : "grab",
-                                        touchAction: "none",
-                                        userSelect: "none",
-                                    }}
-                                >
-                                    <GripVertical
-                                        size={16}
-                                    />
-                                </span>
-                            </div>
-                        );
-                    },
-                )}
-
-                {securities.length === 0 && (
-                    <p
+                <div
+                    style={{
+                        display: "flex",
+                        position: "sticky",
+                        bottom: 0,
+                        zIndex: 5,
+                        marginTop: "auto",
+                        justifyContent: "flex-end",
+                        padding: "12px 18px",
+                        borderTop: "1px solid #eef0f3",
+                        background: "#fff",
+                    }}
+                >
+                    <button
+                        type="button"
+                        disabled={!hasChanges}
+                        onClick={() => onSave(draftIds)}
                         style={{
-                            padding: "24px 0",
-                            textAlign: "center",
-                            color: "#9ca3af",
-                            fontSize: 14,
+                            minWidth: 96,
+                            height: 36,
+                            padding: "0 20px",
+                            border: "none",
+                            borderRadius: 7,
+                            background: hasChanges ? "#1668dc" : "#cbd5e1",
+                            color: "#fff",
+                            fontSize: 13,
+                            fontWeight: 600,
+                            cursor: hasChanges ? "pointer" : "not-allowed",
+                            opacity: hasChanges ? 1 : 0.8,
                         }}
                     >
-                        הרשימה ריקה
-                    </p>
-                )}
+                        שמירה
+                    </button>
+                </div>
             </div>
         </Modal>
     );
