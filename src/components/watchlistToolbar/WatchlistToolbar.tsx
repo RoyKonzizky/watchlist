@@ -192,8 +192,7 @@ export function WatchlistToolbar({
                 <button
                     type="button"
                     onClick={onAdd}
-                    className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-blue-900 px-4 py-2
-                        text-sm text-white transition-colors hover:bg-blue-900"
+                    className="flex cursor-pointer items-center gap-1.5 rounded-lg bg-[#070757] px-4 py-2 text-sm text-white transition-colors hover:bg-[#10106b]"
                 >
                     הוסף נייר
                     <Plus size={15}/>
@@ -205,7 +204,7 @@ export function WatchlistToolbar({
                     aria-label="פעולות על הרשימה"
                     aria-expanded={open === "menu"}
                     className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border
-                        border-slate-200 bg-white text-slate-500 transition-colors
+                        border-slate-200 bg-gray-100 text-slate-500 transition-colors
                         hover:bg-slate-50 hover:text-slate-700"
                 >
                     <Menu size={16}/>

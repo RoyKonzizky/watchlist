@@ -85,7 +85,7 @@ export function Watchlist() {
         {
             key: 'name',
             title: 'שם וסמל',
-            width: 300,
+            width: 200,
             sorter: (a, b) =>
                 a.nameHe.localeCompare(b.nameHe, 'he'),
             render: (security) => (
@@ -134,6 +134,7 @@ export function Watchlist() {
         },
         {
             key: 'price',
+            width: 100,
             title: 'שער אחרון',
             sorter: (a, b) =>
                 a.lastPrice - b.lastPrice,
@@ -146,6 +147,7 @@ export function Watchlist() {
         },
         {
             key: 'changePercent',
+            width: 90,
             title: '% שינוי',
             sorter: (a, b) =>
                 a.changePercent - b.changePercent,
@@ -160,6 +162,7 @@ export function Watchlist() {
         },
         {
             key: 'turnover',
+            width: 100,
             title: 'מחזור',
             sorter: (a, b) =>
                 a.turnover - b.turnover,
@@ -174,7 +177,7 @@ export function Watchlist() {
         },
         {
             key: 'dailyRange',
-            width: 60,
+            width: 120,
             title: 'נמוך/גבוה יומי',
             render: (security) => (
                 <DailyRange security={security}/>
@@ -182,7 +185,7 @@ export function Watchlist() {
         },
         {
             key: 'minichart',
-            width: 60,
+            width: 120,
             title: 'גרף יומי',
             render: (security) => (
                 <MiniChart security={security}/>
@@ -190,7 +193,7 @@ export function Watchlist() {
         },
         {
             key: 'techRating',
-            width: 60,
+            width: 120,
             title: 'טרנד בר',
             render: (security) => (
                 <TrendBar security={security}/>
@@ -198,7 +201,7 @@ export function Watchlist() {
         },
         {
             key: 'return30d',
-            width: 50,
+            width: 120,
             title: 'תשואה 30 ימים',
             sorter: (a, b) =>
                 a.return30d - b.return30d,
@@ -208,6 +211,7 @@ export function Watchlist() {
         },
         {
             key: 'actions',
+            width: 64,
             title: '',
             align: 'center',
             render: (security) => (
@@ -316,8 +320,9 @@ export function Watchlist() {
             {feedIsStale && <StaleFeedBanner/>}
 
             <div
-                className="w-full max-w-full min-w-0 overflow-x-auto"
+                className="watchlist-table-scroll w-full max-w-full min-w-0 overflow-auto"
                 style={{
+                    maxHeight: 'calc(100svh - 112px)',
                     WebkitOverflowScrolling: 'touch',
                     touchAction: 'pan-x pan-y',
                 }}

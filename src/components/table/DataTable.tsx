@@ -73,8 +73,20 @@ export function DataTable<T>({
             style={{
                 borderCollapse: 'collapse',
                 fontSize: 14,
+                tableLayout: 'fixed',
             }}
         >
+            <colgroup>
+                {columns.map((column) => (
+                    <col
+                        key={column.key}
+                        style={{
+                            width: column.width ?? 120,
+                        }}
+                    />
+                ))}
+            </colgroup>
+
             <thead>
             <tr>
                 {columns.map((column) => (
@@ -86,7 +98,6 @@ export function DataTable<T>({
                                 : undefined
                         }
                         style={{
-                            width: column.width,
                             padding: '6px 16px',
                             lineHeight: 1.4,
                             textAlign: column.align ?? 'start',
@@ -135,6 +146,7 @@ export function DataTable<T>({
                                 textAlign: column.align ?? 'start',
                                 borderBottom: '1px solid #f0f0f0',
                                 verticalAlign: 'middle',
+                                overflow: 'hidden',
                             }}
                         >
                             {column.render(row)}
