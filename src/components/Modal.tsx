@@ -6,6 +6,7 @@ interface ModalProps {
     onClose: () => void;
     children: ReactNode;
     width?: number;
+    height?: number | string;
 }
 
 export function Modal({
@@ -13,6 +14,7 @@ export function Modal({
                           onClose,
                           children,
                           width = 420,
+                          height = "min(640px, calc(100dvh - 32px))",
                       }: ModalProps) {
     useEffect(() => {
         const onKeyDown = (event: KeyboardEvent) => {
@@ -65,7 +67,7 @@ export function Modal({
                     display: "flex",
                     width,
                     maxWidth: "calc(100vw - 32px)",
-                    height: "min(640px, calc(100dvh - 32px))",
+                    height,
                     maxHeight: "calc(100dvh - 32px)",
                     minHeight: 0,
                     flexDirection: "column",
@@ -124,7 +126,7 @@ export function Modal({
                 <div
                     data-modal-scroll-body
                     style={{
-                        flex: 1,
+                        flex: height === "auto" ? "0 1 auto" : 1,
                         minHeight: 0,
                         overflowX: "hidden",
                         overflowY: "auto",
