@@ -8,10 +8,10 @@ import {
     PointElement,
     type ChartData,
     type ChartOptions,
-    type ScriptableContext,
 } from "chart.js";
 import {Line} from "react-chartjs-2";
 import type {WatchlistSecurity} from "../../../types/watchlist.ts";
+import {createAreaGradient} from "../../../utils/chartUtils.ts";
 
 ChartJS.register(
     CategoryScale,
@@ -20,58 +20,6 @@ ChartJS.register(
     LineElement,
     Filler,
 );
-
-function createAreaGradient(
-    context: ScriptableContext<"line">,
-    previousClose: number,
-    rgb: string,
-) {
-    const {chart} = context;
-    const {chartArea, ctx, scales} = chart;
-    const yScale = scales.y;
-
-    if (!chartArea || !yScale) {
-        return `rgba(${rgb}, 0.18)`;
-    }
-
-    const chartHeight = chartArea.bottom - chartArea.top;
-    const baselineY = yScale.getPixelForValue(previousClose);
-
-    const baselineStop = Math.max(
-        0,
-        Math.min(1, (baselineY - chartArea.top) / chartHeight),
-    );
-
-    const gradient = ctx.createLinearGradient(
-        0,
-        chartArea.top,
-        0,
-        chartArea.bottom,
-    );
-
-    const color = `rgba(${rgb}, 0.3)`;
-    const transparent = `rgba(${rgb}, 0)`;
-
-    if (baselineStop <= 0) {
-        gradient.addColorStop(0, transparent);
-        gradient.addColorStop(1, color);
-
-        return gradient;
-    }
-
-    if (baselineStop >= 1) {
-        gradient.addColorStop(0, color);
-        gradient.addColorStop(1, transparent);
-
-        return gradient;
-    }
-
-    gradient.addColorStop(0, color);
-    gradient.addColorStop(baselineStop, transparent);
-    gradient.addColorStop(1, color);
-
-    return gradient;
-}
 
 export function MiniChart({security}: {security: WatchlistSecurity}) {
     const {
@@ -219,12 +167,7 @@ export function MiniChart({security}: {security: WatchlistSecurity}) {
     return (
         <div
             dir="ltr"
-            style={{
-                position: "relative",
-                width: 120,
-                height: 34,
-                marginInline: "auto",
-            }}
+            className="relative ms-auto me-0 h-8.5 w-30"
         >
             <Line data={data} options={options}/>
         </div>

@@ -32,10 +32,11 @@ export const formatTurnover = (s: WatchlistSecurity, value: number) => {
     return compact;
 };
 
-export const tone = (value: number) => ({color: value >= 0 ? '#12864b' : '#c0292f'});
+export const toneClass = (value: number) =>
+    value >= 0 ? 'text-[#12864b]' : 'text-[#c0292f]';
 
 /** Text + tinted background for the return badge. */
-export const badgeTone = (value: number) =>
+export const badgeToneClass = (value: number) =>
     value >= 0
-        ? {color: '#0f7c46', background: '#e7f6ee'}
-        : {color: '#c0292f', background: '#fdecec'};
+        ? 'bg-[#e7f6ee] text-[#0f7c46]'
+        : 'bg-[#fdecec] text-[#c0292f]';

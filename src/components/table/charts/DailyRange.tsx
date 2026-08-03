@@ -10,51 +10,28 @@ export function DailyRange({security}: {security: WatchlistSecurity}) {
     const high = formatBound(security, dailyRange.high);
 
     return (
-        <div dir="ltr" style={{width: 128, userSelect: "none"}} title={`${low} – ${high}`}>
-            <div style={{position: "relative", height: 12}}>
+        <div dir="ltr" className="w-32 select-none" title={`${low} - ${high}`}>
+            <div className="relative h-3">
                 <span
+                    className="absolute bottom-px translate-x-[-50%] text-[9px] leading-none"
                     style={{
-                        position: "absolute",
                         left: `${position}%`,
-                        bottom: 1,
-                        transform: "translateX(-50%)",
-                        fontSize: 9,
-                        lineHeight: 1,
                     }}
                 >
                     ▼
                 </span>
             </div>
 
-            <div
-                style={{
-                    position: "relative",
-                    height: 13,
-                    overflow: "hidden",
-                    borderRadius: 4,
-                    background: "#e5e7eb",
-                }}
-            >
+            <div className="relative h-[13px] overflow-hidden rounded bg-gray-200">
                 <div
+                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-slate-700 to-slate-500"
                     style={{
-                        position: "absolute",
-                        insetBlock: 0,
-                        left: 0,
                         width: `${position}%`,
-                        background: "linear-gradient(90deg, #334155 0%, #64748b 100%)",
                     }}
                 />
             </div>
 
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginTop: 4,
-                    fontSize: 10,
-                    opacity: 0.7,
-                }}
-            >
+            <div className="mt-1 flex justify-between text-[10px] opacity-70">
                 <span>{low}</span>
                 <span>{high}</span>
             </div>

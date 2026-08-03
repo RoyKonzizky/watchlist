@@ -47,56 +47,21 @@ export function Modal({
         <div
             role="presentation"
             onClick={onClose}
-            style={{
-                position: "fixed",
-                inset: 0,
-                zIndex: 50,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: 16,
-                background: "rgba(15, 23, 42, 0.38)",
-            }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
         >
             <div
                 role="dialog"
                 aria-modal="true"
                 dir="rtl"
                 onClick={(event) => event.stopPropagation()}
+                className="flex min-h-0 max-h-[calc(100dvh-32px)] max-w-[calc(100vw-32px)] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white text-gray-900 shadow-[0_22px_55px_rgba(15,23,42,0.24)]"
                 style={{
-                    display: "flex",
                     width,
-                    maxWidth: "calc(100vw - 32px)",
                     height,
-                    maxHeight: "calc(100dvh - 32px)",
-                    minHeight: 0,
-                    flexDirection: "column",
-                    overflow: "hidden",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: 16,
-                    background: "#fff",
-                    color: "#111827",
-                    boxShadow: "0 22px 55px rgba(15, 23, 42, 0.24)",
                 }}
             >
-                <div
-                    style={{
-                        display: "flex",
-                        minHeight: 56,
-                        flexShrink: 0,
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "0 20px",
-                        borderBottom: "1px solid #eef0f3",
-                    }}
-                >
-                    <span
-                        style={{
-                            fontSize: 16,
-                            fontWeight: 600,
-                            color: "#6b7280",
-                        }}
-                    >
+                <div className="flex min-h-14 shrink-0 items-center justify-between border-b border-[#eef0f3] px-5">
+                    <span className="text-base font-semibold text-gray-500">
                         {title}
                     </span>
 
@@ -104,20 +69,7 @@ export function Modal({
                         type="button"
                         onClick={onClose}
                         aria-label="סגירה"
-                        style={{
-                            display: "flex",
-                            width: 30,
-                            height: 30,
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexShrink: 0,
-                            padding: 0,
-                            border: "none",
-                            borderRadius: 8,
-                            background: "transparent",
-                            color: "#64748b",
-                            cursor: "pointer",
-                        }}
+                        className="flex h-[30px] w-[30px] shrink-0 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent p-0 text-slate-500"
                     >
                         <X size={18}/>
                     </button>
@@ -125,15 +77,7 @@ export function Modal({
 
                 <div
                     data-modal-scroll-body
-                    style={{
-                        flex: height === "auto" ? "0 1 auto" : 1,
-                        minHeight: 0,
-                        overflowX: "hidden",
-                        overflowY: "auto",
-                        overscrollBehavior: "contain",
-                        WebkitOverflowScrolling: "touch",
-                        touchAction: "pan-y",
-                    }}
+                    className={`${height === "auto" ? "flex-[0_1_auto]" : "flex-1"} min-h-0 touch-pan-y overflow-x-hidden overflow-y-auto overscroll-contain [-webkit-overflow-scrolling:touch]`}
                 >
                     {children}
                 </div>

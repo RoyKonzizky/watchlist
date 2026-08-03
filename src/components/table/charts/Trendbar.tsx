@@ -6,29 +6,15 @@ export function TrendBar({security}: {security: WatchlistSecurity}) {
         <div
             dir="ltr"
             aria-label="מגמת 13 שבועות"
-            style={{
-                display: "flex",
-                width: "fit-content",
-                minWidth: 89,
-                height: 22,
-                marginInlineStart: "auto",
-                marginInlineEnd: 0,
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 2,
-            }}
+            className="ms-auto me-0 flex h-5.5 min-w-[89px] w-fit items-center justify-center gap-0.5"
         >
             {security.weeklyBars.map((bar) => (
                 <span
                     key={bar.weekStart}
                     title={`${bar.weekStart}: ${formatPercent(bar.changePercent)}`}
-                    style={{
-                        width: 5,
-                        height: 22,
-                        flex: "0 0 5px",
-                        borderRadius: 3,
-                        background: bar.changePercent >= 0 ? "#16a36a" : "#df3b50",
-                    }}
+                    className={`h-5.5 w-[5px] flex-[0_0_5px] rounded-[3px] ${
+                        bar.changePercent >= 0 ? "bg-[#16a36a]" : "bg-[#df3b50]"
+                    }`}
                 />
             ))}
         </div>

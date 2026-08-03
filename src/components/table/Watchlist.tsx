@@ -8,14 +8,14 @@ import {Amount} from "./cells/Amount.tsx";
 import {
     formatPercent,
     formatTurnover,
-    tone,
+    toneClass,
 } from "../../utils/formatters.ts";
 import {ReturnBadge} from "./cells/ReturnBadge.tsx";
 import {RowMenu} from "./cells/RowMenu.tsx";
 import {WatchlistToolbar} from "../watchlistToolbar/WatchlistToolbar.tsx";
 import {AddSecurityDialog} from ".././dialog/AddSecurityDialog.tsx";
 import {ListNameDialog} from ".././dialog/ListNameDialog.tsx";
-import {EditListDialog} from ".././dialog/EditListDialog.tsx";
+import {EditListDialog} from "../dialog/EditList/EditListDialog.tsx";
 import {
     EmptyState,
     ErrorState,
@@ -89,25 +89,10 @@ export function Watchlist() {
             sorter: (a, b) =>
                 a.nameHe.localeCompare(b.nameHe, 'he'),
             render: (security) => (
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                        width: 'fit-content',
-                        whiteSpace: 'nowrap',
-                    }}
-                >
+                <div className="flex w-fit items-center gap-2.5 whitespace-nowrap">
                     <span
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs"
                         style={{
-                            display: 'flex',
-                            height: 32,
-                            width: 32,
-                            flexShrink: 0,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            borderRadius: '50%',
-                            fontSize: 12,
                             background: security.logo.background,
                             color: security.logo.color,
                         }}
@@ -115,17 +100,12 @@ export function Watchlist() {
                         {security.logo.initials}
                     </span>
 
-                    <div style={{textAlign: 'right'}}>
-                        <div style={{fontWeight: 600}}>
+                    <div className="text-right">
+                        <div className="font-semibold">
                             {security.nameHe}
                         </div>
 
-                        <div
-                            style={{
-                                fontSize: 12,
-                                color: '#6b7280',
-                            }}
-                        >
+                        <div className="text-xs text-gray-500">
                             {security.nameEn}
                         </div>
                     </div>
@@ -154,7 +134,7 @@ export function Watchlist() {
             render: (security) => (
                 <span
                     dir="ltr"
-                    style={tone(security.changePercent)}
+                    className={toneClass(security.changePercent)}
                 >
                     {formatPercent(security.changePercent)}
                 </span>
@@ -320,12 +300,7 @@ export function Watchlist() {
             {feedIsStale && <StaleFeedBanner/>}
 
             <div
-                className="watchlist-table-scroll w-full max-w-full min-w-0 overflow-auto"
-                style={{
-                    maxHeight: 'calc(100svh - 112px)',
-                    WebkitOverflowScrolling: 'touch',
-                    touchAction: 'pan-x pan-y',
-                }}
+                className="watchlist-table-scroll w-full max-w-full min-w-0 overflow-auto max-h-[calc(100svh-112px)] [touch-action:pan-x_pan-y] [-webkit-overflow-scrolling:touch]"
             >
                 {bodyByStateStatus()}
             </div>

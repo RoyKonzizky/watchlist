@@ -20,6 +20,18 @@ type SortState = {
     direction: 'asc' | 'desc';
 } | null;
 
+const alignClass = (align: Column<unknown>['align']) => {
+    if (align === 'center') {
+        return 'text-center';
+    }
+
+    if (align === 'end') {
+        return 'text-end';
+    }
+
+    return 'text-start';
+};
+
 export function DataTable<T>({
                                  columns,
                                  rows,
@@ -69,12 +81,7 @@ export function DataTable<T>({
 
     return (
         <table
-            className="w-full min-w-[960px]"
-            style={{
-                borderCollapse: 'collapse',
-                fontSize: 14,
-                tableLayout: 'fixed',
-            }}
+            className="w-full min-w-[960px] table-fixed border-collapse text-sm"
         >
             <colgroup>
                 {columns.map((column) => (
@@ -92,36 +99,20 @@ export function DataTable<T>({
                 {columns.map((column) => (
                     <th
                         key={column.key}
+                        className={`select-none whitespace-nowrap border-b border-[#f0f0f0] bg-[#fafafa] px-4 py-1.5 text-[13px] font-semibold leading-[1.4] text-gray-900 ${
+                            alignClass(column.align)
+                        } ${column.sorter ? 'cursor-pointer' : 'cursor-default'}`}
                         onClick={
                             column.sorter
                                 ? () => toggleSort(column.key)
                                 : undefined
                         }
-                        style={{
-                            padding: '6px 16px',
-                            lineHeight: 1.4,
-                            textAlign: column.align ?? 'start',
-                            borderBottom: '1px solid #f0f0f0',
-                            background: '#fafafa',
-                            fontSize: 13,
-                            fontWeight: 600,
-                            color: '#111827',
-                            whiteSpace: 'nowrap',
-                            cursor: column.sorter
-                                ? 'pointer'
-                                : 'default',
-                            userSelect: 'none',
-                        }}
                     >
                         {column.title}
 
                         {column.sorter && (
                             <span
-                                style={{
-                                    marginInlineStart: 6,
-                                    color: '#9ca3af',
-                                    fontSize: 10,
-                                }}
+                                className="ms-1.5 text-[10px] text-gray-400"
                             >
                                     {sort?.key === column.key
                                         ? sort.direction === 'asc'
@@ -141,13 +132,9 @@ export function DataTable<T>({
                     {columns.map((column) => (
                         <td
                             key={column.key}
-                            style={{
-                                padding: '12px 16px',
-                                textAlign: column.align ?? 'start',
-                                borderBottom: '1px solid #f0f0f0',
-                                verticalAlign: 'middle',
-                                overflow: 'hidden',
-                            }}
+                            className={`overflow-hidden border-b border-[#f0f0f0] px-4 py-3 align-middle ${
+                                alignClass(column.align)
+                            }`}
                         >
                             {column.render(row)}
                         </td>

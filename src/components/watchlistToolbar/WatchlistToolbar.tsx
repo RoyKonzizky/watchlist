@@ -9,7 +9,6 @@ interface WatchlistToolbarProps {
     lists: SecurityList[];
     activeList: SecurityList;
     onSelect: (id: string) => void;
-    // onCreate: () => void;
     onAdd: () => void;
     onEdit: () => void;
     onRename: () => void;
@@ -25,7 +24,6 @@ export function WatchlistToolbar({
                                      lists,
                                      activeList,
                                      onSelect,
-                                     // onCreate,
                                      onAdd,
                                      onEdit,
                                      onRename,
@@ -63,9 +61,7 @@ export function WatchlistToolbar({
                     type="button"
                     onClick={() => setOpen(open === "lists" ? null : "lists")}
                     aria-expanded={open === "lists"}
-                    className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-300
-                        bg-slate-200 px-3 py-1.5 text-slate-900 transition-colors hover:bg-slate-300"
-                    style={{fontSize: 12}}
+                    className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-300 bg-slate-200 px-3 py-1.5 text-xs text-slate-900 transition-colors hover:bg-slate-300"
                 >
                     <bdi>{activeList.name}</bdi>
                     <ChevronDown
@@ -78,7 +74,7 @@ export function WatchlistToolbar({
 
                 {open === "lists" && (
                     <div className={`${popover} right-0`}>
-                        <div style={{display: "flex", flexDirection: "column", gap: 5}}>
+                        <div className="flex flex-col gap-[5px]">
                             {lists.map((list) => {
                                 const symbols = getListSymbols(list);
                                 const remainingCount = Math.max(0, list.securityIds.length - 3);
@@ -89,64 +85,29 @@ export function WatchlistToolbar({
                                         key={list.id}
                                         type="button"
                                         onClick={run(() => onSelect(list.id))}
-                                        className={`transition-colors duration-150 ${
-                                            isActive ? "bg-slate-200 hover:bg-slate-300" : "bg-white hover:bg-slate-100"
+                                        className={`flex min-h-[38px] w-full cursor-pointer items-center justify-between gap-3 rounded-lg border px-[9px] py-1.5 text-right text-xs text-gray-900 transition-colors duration-150 ${
+                                            isActive
+                                                ? "border-slate-300 bg-slate-200 font-semibold hover:bg-slate-300"
+                                                : "border-slate-200 bg-white font-normal hover:bg-slate-100"
                                         }`}
-                                        style={{
-                                            display: "flex",
-                                            width: "100%",
-                                            minHeight: 38,
-                                            alignItems: "center",
-                                            justifyContent: "space-between",
-                                            gap: 12,
-                                            padding: "6px 9px",
-                                            border: `1px solid ${isActive ? "#cbd5e1" : "#e2e8f0"}`,
-                                            borderRadius: 8,
-                                            color: "#111827",
-                                            fontSize: 12,
-                                            fontWeight: isActive ? 600 : 400,
-                                            textAlign: "right",
-                                            cursor: "pointer",
-                                        }}
                                     >
-                                        <span
-                                            style={{
-                                                minWidth: 0,
-                                                overflow: "hidden",
-                                                whiteSpace: "nowrap",
-                                                textOverflow: "ellipsis",
-                                            }}
-                                        >
+                                        <span className="min-w-0 overflow-hidden text-ellipsis whitespace-nowrap">
                                             <bdi>{list.name}</bdi>
                                         </span>
 
                                         <span
                                             dir="ltr"
-                                            style={{
-                                                display: "flex",
-                                                minWidth: 54,
-                                                flexShrink: 0,
-                                                alignItems: "center",
-                                                justifyContent: "flex-start",
-                                            }}
+                                            className="flex min-w-[54px] shrink-0 items-center justify-start"
                                         >
                                             {symbols.map((security, index) => (
                                                 <span
                                                     key={security.id}
                                                     title={security.nameHe}
+                                                    className="flex h-[23px] w-[23px] items-center justify-center rounded-full border-2 border-white text-[8px] leading-none"
                                                     style={{
-                                                        display: "flex",
-                                                        width: 23,
-                                                        height: 23,
                                                         marginLeft: index === 0 ? 0 : -6,
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
-                                                        border: "2px solid #fff",
-                                                        borderRadius: "50%",
                                                         background: security.logo.background,
                                                         color: security.logo.color,
-                                                        fontSize: 8,
-                                                        lineHeight: 1,
                                                     }}
                                                 >
                                                     {security.logo.initials}
@@ -154,28 +115,13 @@ export function WatchlistToolbar({
                                             ))}
 
                                             {remainingCount > 0 && (
-                                                <span
-                                                    style={{
-                                                        display: "flex",
-                                                        width: 23,
-                                                        height: 23,
-                                                        marginLeft: -6,
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
-                                                        border: "2px solid #fff",
-                                                        borderRadius: "50%",
-                                                        background: "#f1f5f9",
-                                                        color: "#475569",
-                                                        fontSize: 8,
-                                                        lineHeight: 1,
-                                                    }}
-                                                >
+                                                <span className="-ml-1.5 flex h-[23px] w-[23px] items-center justify-center rounded-full border-2 border-white bg-slate-100 text-[8px] leading-none text-slate-600">
                                                     +{remainingCount}
                                                 </span>
                                             )}
 
                                             {symbols.length === 0 && (
-                                                <span style={{fontSize: 10, color: "#94a3b8"}}>
+                                                <span className="text-[10px] text-slate-400">
                                                     ריקה
                                                 </span>
                                             )}
@@ -203,26 +149,13 @@ export function WatchlistToolbar({
                     onClick={() => setOpen(open === "menu" ? null : "menu")}
                     aria-label="פעולות על הרשימה"
                     aria-expanded={open === "menu"}
-                    className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border
-                        border-slate-200 bg-gray-100 text-slate-500 transition-colors
-                        hover:bg-slate-50 hover:text-slate-700"
+                    className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-slate-200 bg-gray-100 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
                 >
                     <Menu size={16}/>
                 </button>
 
                 {open === "menu" && (
                     <div className={`${popover} left-0`}>
-                        {/*<button*/}
-                        {/*    type="button"*/}
-                        {/*    onClick={run(onCreate)}*/}
-                        {/*    className={`${menuItem} font-semibold text-blue-600 hover:bg-blue-50`}*/}
-                        {/*>*/}
-                        {/*    <Plus size={16}/>*/}
-                        {/*    רשימה חדשה*/}
-                        {/*</button>*/}
-
-                        {/*<div className="my-1.5 border-t border-slate-100"/>*/}
-
                         <button type="button" onClick={run(onEdit)} className={menuItem}>
                             <Pencil size={16} className="text-slate-400"/>
                             עריכת רשימה

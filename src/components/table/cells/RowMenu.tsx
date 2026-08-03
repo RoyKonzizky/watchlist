@@ -147,14 +147,12 @@ export function RowMenu({
                             ref={menuRef}
                             role="menu"
                             dir="rtl"
-                            className="w-28 overflow-hidden rounded-lg border border-slate-200
+                            className="fixed z-30 w-28 overflow-hidden rounded-lg border border-slate-200
                                 bg-white shadow-[0_8px_20px_rgba(15,23,42,0.14)]
                                 divide-y divide-slate-100"
                             style={{
-                                position: "fixed",
                                 top: position.top,
                                 left: position.left,
-                                zIndex: 30,
                                 visibility: position.ready ? "visible" : "hidden",
                             }}
                         >
